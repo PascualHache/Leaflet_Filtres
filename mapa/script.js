@@ -1,4 +1,4 @@
-var map = L.map('mapid').on('load', onMapLoad).setView([41.400, 2.206], 16);
+var map = L.map('mapid').on('load', getDB).setView([41.400, 2.206], 16);
 map.locate({ setView: true, maxZoom: 17 });
 
 var tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {}).addTo(map);
@@ -20,7 +20,7 @@ function getDB() {
 		url: "api/apiRestaurants.php",
 		success: function (data) {
 			// alert('Get Success');
-			console.log(data);
+			// console.log(data);
 			db_parsed = data;
 		}
 	});
@@ -65,6 +65,7 @@ function drawByObj(inputDb) {
 			draggable: false,
 		}).bindPopup("<strong>" + inputDb[index].name + "</strong><br>" + inputDb[index].address + "<br>" + inputDb[index].kind_food).addTo(layerGroup));
 	});
+	fitFocusScreen(db_parsed);
 }
 
 //Permite enfocar todos los marcadores en pantalla
@@ -96,44 +97,40 @@ function loadSelectOptions() {
 }
 
 $.when(getDB()).done(function (data) {
-	loadSelectOptions();
-	drawByObj(getRestByKind('Todos'));
-	fitFocusScreen(db_parsed);
+	onMapLoad();
 });
 
 function onMapLoad() {
-	console.log("Mapa cargado");
 	/*
 	FASE 3.1
 		1) Relleno el data_markers con una petición a la api
 		2) Añado de forma dinámica en el select los posibles tipos de restaurantes
 		3) Llamo a la función para --> render_to_map(data_markers, 'all'); <-- para mostrar restaurantes en el mapa
 	*/
+	console.log("Mapa cargado");
+	loadSelectOptions();
+	render_to_map(data_markers, 'Todos');
 }
 
 $('#kind_food_selector').on('change', function () {
-	data_markers = [];
-	console.log(this.value);
-	layerGroup.clearLayers();
-	drawByObj(getRestByKind(this.value));
-	fitFocusScreen(db_parsed);
 	render_to_map(data_markers, this.value);
 	updateHTMLList(getRestByKind(this.value));
 });
 
 function render_to_map(data_markers, filter) {
-	if (filter == "Todos") {
-		console.log("Todos");
-		getRestByKind("Todos");
-	} else {
-		console.log(filter);
-		getRestByKind(filter);
-	}
 	/*
 	FASE 3.2
 		1) Limpio todos los marcadores
 		2) Realizo un bucle para decidir que marcadores cumplen el filtro, y los agregamos al mapa
 	*/
+	data_markers = [];
+	layerGroup.clearLayers();
+	drawByObj(getRestByKind(filter));
+	if (filter == "Todos") {
+		getRestByKind("Todos");
+	} else {
+		getRestByKind(filter);
+	}
 }
 
 function updateHTMLList(db_parsed) {
