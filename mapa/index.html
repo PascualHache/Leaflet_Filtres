@@ -10,7 +10,6 @@
 
 <body>
   <div class="row">
-    <button type="button" onclick="getRestByKind('all')">Click Me!</button>
     <p>Tipos de restaurantes:
       <span>
         <select id='kind_food_selector'></select>
@@ -19,12 +18,34 @@
   </div>
 
   <div id="mapid" class="row"></div>
+
+  <div class="row">
+    <p>Resultados:
+      <ul id="theList">
+      </ul>
+    </p>
+  </div>
+
   <style>
     #mapid {
       height: 400px;
     }
-  </style>
 
+    :root {
+      --font-number: Montserrat, Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    ol,
+    p {
+      list-style-type: none;
+      counter-reset: li;
+    }
+
+    li,
+    p {
+      font-size: 1.2rem;
+    }
+  </style>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
   <script src='https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js'></script>
